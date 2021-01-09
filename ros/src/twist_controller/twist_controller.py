@@ -2,8 +2,6 @@ import rospy
 from yaw_controller import YawController
 from pid import PID
 from lowpass import LowPassFilter
-GAS_DENSITY = 2.858
-ONE_MPH = 0.44704
 
 
 class Controller(object):
@@ -13,15 +11,18 @@ class Controller(object):
         # TODO: Implement
         
         # Init steering/yaw controller
-        self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel,
-                                            max_steer_angle)
+        self.yaw_controller = YawController(wheel_base=wheel_base, 
+                                            steer_ratio=steer_ratio, 
+                                            min_speed=0.1, 
+                                            max_lat_accel=max_lat_accel,
+                                            max_steer_angle=max_steer_angle)
         
         # Init throttle/PID controller
-        kp = 0.5
-        ki = 0.001
-        kd = 0.8
+        kp = 0.3
+        ki = 0.1
+        kd = 0.
         mn = 0. # Min throttle value
-        mx = 0.2 # Max throttle value
+        mx = 0.3 # Max throttle value
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
         # Init velocity/LPF
@@ -29,13 +30,10 @@ class Controller(object):
         ts = 0.02
         self.vel_lpf = LowPassFilter(tau, ts)
 
+        # Useful params
         self.vehicle_mass = vehicle_mass
-        self.fuel_capacity = fuel_capacity
-        self.brake_deadband = brake_deadband
         self.decel_limit = decel_limit
-        self.accel_limit = accel_limit
         self.wheel_radius = wheel_radius
-
         self.last_time = rospy.get_time()
 
 
@@ -68,9 +66,9 @@ class Controller(object):
         brake = 0
         
         # Apply brake if almost at stop
-        if linear_vel == 0 and current_vel < 0.1:
+        if linear_vel == 0 and current_vel < 0:
             throttle = 0.
-            brake = 700 # Nm to make the car stationary
+            brake = 400 # Nm to make the car stationary
         
         # if throttle is small, apply brake
         elif throttle < 0.1 and vel_err < 0:
