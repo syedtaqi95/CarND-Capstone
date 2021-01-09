@@ -55,7 +55,7 @@ class DBWNode(object):
 
         # TODO: Create `Controller` object
         # self.controller = Controller(<Arguments you wish to provide>)
-        self.controller = self.Controller(vehicle_mass = vehicle_mass,
+        self.controller = Controller(vehicle_mass = vehicle_mass,
                                         fuel_capacity = fuel_capacity,
                                         brake_deadband = brake_deadband,
                                         decel_limit = decel_limit,
@@ -94,7 +94,7 @@ class DBWNode(object):
                                                                 self.angular_vel)
 
             if self.dbw_enabled:
-              self.publish(self.throttle, self.brake, self.steer)
+              self.publish(self.throttle, self.brake, self.steering)
             rate.sleep()
     
     def dbw_enabled_cb(self, msg):
@@ -104,7 +104,7 @@ class DBWNode(object):
         self.linear_vel = msg.twist.linear.x
         self.angular_vel = msg.twist.angular.z
     
-    def velocity_cb(self.msg):
+    def current_velocity_cb(self, msg):
         self.current_vel = msg.twist.linear.x
 
     def publish(self, throttle, brake, steer):
