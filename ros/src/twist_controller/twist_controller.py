@@ -22,7 +22,7 @@ class Controller(object):
         ki = 0.1
         kd = 0.
         mn = 0. # Min throttle value
-        mx = 0.3 # Max throttle value
+        mx = 0.4 # Max throttle value
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
         # Init velocity/LPF
